@@ -100,6 +100,7 @@ module "gke_private_cluster" {
     spot = {
       name         = "spot-pool"
       machine_type = "e2-standard-2"
+      spot = true
       disk_size_gb = 50
       initial_node_count = 1
       autoscaling = {
