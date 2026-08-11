@@ -23,6 +23,7 @@ resource "google_compute_instance" "instances" {
   }
   tags = each.value.tags
   labels = each.value.labels
+  metadata_startup_script = lookup(each.value, "startup_script", null)
 
   # Use this block to ignore changes to certain attributes after the instance is created
   # lifecycle {

@@ -17,6 +17,7 @@ variable "instances" {
     tags               = list(string)
     labels             = map(string)
     enable_external_ip = bool
+    startup_script     = optional(string)
   }))
   description = "Map of instances to create"
   default     = {}

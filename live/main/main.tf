@@ -29,7 +29,7 @@ module "networking" {
     allow-ssh = {
       name          = "${var.name_prefix}-vpc-allow-ssh"
       description   = "Allows TCP connections from any source to any instance on the network using port 22."
-      source_ranges = [var.subnet_01_ip]
+      source_ranges = ["0.0.0.0/0"]
       target_tags   = ["ssh"]
       priority      = 65534
       allow = [{
@@ -111,6 +111,20 @@ module "gke_private_cluster" {
   }
 }
 
+# 1) The service account itself (new resource in live/main/ or compute module)
+resource "google_service_account" "jump_host" {
+  project      = var.project_id
+  account_id   = "${var.name_prefix}-jump-host"
+  display_name = "Jump host service account"
+}
+
+# 2) IAM binding: give it permission to talk to the cluster
+resource "google_project_iam_member" "jump_host_cluster_viewer" {
+  project = var.project_id
+  role    = "roles/container.clusterViewer"
+  member  = "serviceAccount:${google_service_account.jump_host.email}"
+}
+
 module "compute" {
   source = "../../modules/compute"
 
@@ -126,9 +140,12 @@ module "compute" {
       subnetwork          = module.networking.subnets["subnet-01"].self_link
       tags                = ["ssh"]
       enable_external_ip  = true
+      service_account     = google_service_account.jump_host.email
+      scopes              = ["cloud-platform"]
       labels             = {
         role        = "jump-host"
       }
+      startup_script      = file("./scripts/jump-host.sh")
       
     }
     # Example for another instance:
