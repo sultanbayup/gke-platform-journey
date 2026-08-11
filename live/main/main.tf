@@ -29,7 +29,7 @@ module "networking" {
     allow-ssh = {
       name          = "${var.vpc_name}-vpc-allow-ssh"
       description   = "Allows TCP connections from any source to any instance on the network using port 22."
-      source_ranges = ["0.0.0.0/0"]
+      source_ranges = [var.subnet_01_ip]
       target_tags   = ["ssh"]
       priority      = 65534
       allow = [{
@@ -40,7 +40,7 @@ module "networking" {
     allow-rdp = {
       name          = "${var.vpc_name}-vpc-allow-rdp"
       description   = "Allows RDP connections from any source to any instance on the network using port 3389."
-      source_ranges = ["0.0.0.0/0"]
+      source_ranges = [var.subnet_01_ip]
       target_tags   = ["rdp-server"]
       priority      = 65534
       allow = [{
@@ -61,6 +61,7 @@ module "networking" {
     allow-icmp = {
       name          = "${var.vpc_name}-vpc-allow-icmp"
       description   = "Allows ICMP connections from any source to any instance on the network."
+      source_ranges = [var.subnet_01_ip]
       priority      = 65534
       allow = [{
         protocol = "icmp"
@@ -102,7 +103,6 @@ module "gke_private_cluster" {
       machine_type = "e2-standard-2"
       spot = true
       disk_size_gb = 50
-      initial_node_count = 1
       autoscaling = {
         min_node_count = 1
         max_node_count = 2
