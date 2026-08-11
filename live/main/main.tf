@@ -4,11 +4,11 @@ module "networking" {
 
   project_id   = var.project_id
   routing_mode = "REGIONAL"
-  network_name = "${var.vpc_name}-vpc"
+  network_name = "${var.name_prefix}-vpc"
 
   subnets = {
     subnet-01 = {
-      subnet_name          = "${var.vpc_name}-asia-southeast-jakarta"
+      subnet_name          = "${var.name_prefix}-asia-southeast-jakarta"
       subnet_ip            = var.subnet_01_ip
       subnet_region        = var.region
       subnet_private_access = true
@@ -27,7 +27,7 @@ module "networking" {
 
   firewall_rules = {
     allow-ssh = {
-      name          = "${var.vpc_name}-vpc-allow-ssh"
+      name          = "${var.name_prefix}-vpc-allow-ssh"
       description   = "Allows TCP connections from any source to any instance on the network using port 22."
       source_ranges = [var.subnet_01_ip]
       target_tags   = ["ssh"]
@@ -38,7 +38,7 @@ module "networking" {
       }]
     }
     allow-rdp = {
-      name          = "${var.vpc_name}-vpc-allow-rdp"
+      name          = "${var.name_prefix}-vpc-allow-rdp"
       description   = "Allows RDP connections from any source to any instance on the network using port 3389."
       source_ranges = [var.subnet_01_ip]
       target_tags   = ["rdp-server"]
@@ -49,7 +49,7 @@ module "networking" {
       }]
     }
     allow-custom = {
-      name          = "${var.vpc_name}-vpc-allow-custom"
+      name          = "${var.name_prefix}-vpc-allow-custom"
       description   = "Allows connection from any source to any instance on the network using custom protocols."
       source_ranges = [var.subnet_01_ip]
       priority      = 65534
@@ -59,7 +59,7 @@ module "networking" {
       }]
     }
     allow-icmp = {
-      name          = "${var.vpc_name}-vpc-allow-icmp"
+      name          = "${var.name_prefix}-vpc-allow-icmp"
       description   = "Allows ICMP connections from any source to any instance on the network."
       source_ranges = [var.subnet_01_ip]
       priority      = 65534
@@ -76,7 +76,7 @@ module "networking" {
 module "gke_private_cluster" {
   source = "../../modules/gke-private-cluster"
   project_id                   = var.project_id
-  cluster_name                 = var.cluster_name
+  cluster_name                 = "${var.name_prefix}-main"
   location                     = var.zone
   network                      = module.networking.network_name
   subnetwork                   = module.networking.subnets["subnet-01"].name
@@ -108,5 +108,37 @@ module "gke_private_cluster" {
         max_node_count = 2
       }
     }
+  }
+}
+
+module "compute" {
+  source = "../../modules/compute"
+
+  project_id = var.project_id
+  network    = module.networking.network_self_link
+
+  # Add compute instances as needed
+  instances = {
+    jump-host = {
+      name                = "${var.name_prefix}-jump-host"
+      machine_type        = "e2-micro"
+      zone                = "${var.region}-a"
+      subnetwork          = module.networking.subnets["subnet-01"].self_link
+      tags                = ["ssh"]
+      enable_external_ip  = true
+      labels             = {
+        role        = "jump-host"
+      }
+      
+    }
+    # Example for another instance:
+    # app-01 = {
+    #   name                = "${var.environment}-app-01"
+    #   machine_type        = "e2-small"
+    #   zone                = "${var.region}-b"
+    #   subnetwork          = module.networking.subnets["subnet-01"].self_link
+    #   tags                = ["ssh"]
+    #   enable_external_ip  = false
+    # }
   }
 }

@@ -3,9 +3,9 @@ variable "project_id" {
   description = "The GCP project ID"
 }
 
-variable "vpc_name" {
+variable "name_prefix" {
+  description = "Prefix used for resource naming"
   type        = string
-  description = "The VPC name prefix"
 }
 
 variable "subnet_01_ip" {
@@ -21,11 +21,6 @@ variable "region" {
 variable "zone" {
   type        = string
   description = "The zone to deploy resources"
-}
-
-variable "cluster_name" {
-  type        = string
-  description = "The GKE cluster name"
 }
 
 variable "master_ipv4_cidr_block" {
