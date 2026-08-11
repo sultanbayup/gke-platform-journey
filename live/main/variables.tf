@@ -46,12 +46,3 @@ variable "master_authorized_networks" {
   description = "Master authorized networks"
   default     = []
 }
-
-variable "node_pools" {
-    type = map(object({
-      name         = string
-      machine_type = string
-    }))
-    description = "Node pools configuration"
-    default     = {}
-  }
