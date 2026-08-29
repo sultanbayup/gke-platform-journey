@@ -76,7 +76,7 @@ module "networking" {
 module "gke_private_cluster" {
   source = "../../modules/gke-private-cluster"
   project_id                   = var.project_id
-  cluster_name                 = "${var.name_prefix}-main"
+  cluster_name                 = "${var.name_prefix}-cluster"
   location                     = var.zone
   network                      = module.networking.network_name
   subnetwork                   = module.networking.subnets["subnet-01"].name
@@ -88,7 +88,7 @@ module "gke_private_cluster" {
   master_authorized_networks   = var.master_authorized_networks
   node_pools = {
     # Default node pool
-    default = {
+    default-pool = {
       name         = "default-pool"
       machine_type = "e2-medium"
       disk_size_gb = 50
@@ -98,7 +98,7 @@ module "gke_private_cluster" {
       }
     }
     # Spot node pool
-    spot = {
+    spot-pool = {
       name         = "spot-pool"
       machine_type = "e2-standard-2"
       spot = true
