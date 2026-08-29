@@ -54,3 +54,20 @@ spec:
       port: 80
       targetPort: 80
       nodePort: 30080
+---
+# This Service is of type LoadBalancer, which means it will provision an external load balancer to route traffic to the whoami pods.
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: whoami-lb
+#   namespace: default
+#   labels:
+#     app: whoami
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: whoami
+#   ports:
+#     - protocol: TCP
+#       port: 80
+#       targetPort: 80

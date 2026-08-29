@@ -63,3 +63,20 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
+---
+# # This Service is of type LoadBalancer, which means it will provision an external load balancer to route traffic to the webserver pods.
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: webserver
+#   namespace: default
+#   labels:
+#     app: webserver
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: webserver
+#   ports:
+#     - protocol: TCP
+#       port: 80
+#       targetPort: 80
