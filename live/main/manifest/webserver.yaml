@@ -67,7 +67,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: webserver-NodePort
+  name: webserver-np
   namespace: default
   labels:
     app: webserver

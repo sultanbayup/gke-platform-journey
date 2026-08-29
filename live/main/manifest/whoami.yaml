@@ -41,7 +41,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: whoami-NodePort
+  name: whoami-np
   namespace: default
   labels:
     app: whoami
