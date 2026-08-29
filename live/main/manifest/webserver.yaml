@@ -51,7 +51,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: webserver
+  name: webserver-NodePort
   namespace: default
   labels:
     app: webserver
@@ -68,7 +68,7 @@ spec:
 # apiVersion: v1
 # kind: Service
 # metadata:
-#   name: webserver
+#   name: webserver-lb
 #   namespace: default
 #   labels:
 #     app: webserver
