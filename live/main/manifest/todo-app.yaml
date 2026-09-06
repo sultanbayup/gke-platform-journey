@@ -53,3 +53,49 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 5000
+---
+# CronJob to backup the SQLite database every 5 minutes
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: todo-backup
+  namespace: default
+  labels:
+    app: todo-backup
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: todo-backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: python:3.12-slim
+              command: ["python", "-c"]
+              args:
+                - |
+                  import sqlite3, os, time
+                  src = "/data/todos.db"
+                  dst = "/data/backups/todos-%s.db" % time.strftime("%Y%m%d%H%M%S")
+                  os.makedirs(os.path.dirname(dst), exist_ok=True)
+                  conn = sqlite3.connect(src)
+                  bck = sqlite3.connect(dst)
+                  with bck:
+                      conn.backup(bck)
+                  conn.close()
+                  bck.close()
+                  print("backed up to", dst)
+              volumeMounts:
+                - name: todo-data
+                  mountPath: /data
+          volumes:
+            - name: todo-data
+              persistentVolumeClaim:
+                claimName: todo-data
