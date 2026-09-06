@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: todo-data
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  namespace: default
+  labels:
+    app: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: gcr.io/${PROJECT_ID}/todo-app:latest
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: todo-data
+              mountPath: /data
+      volumes:
+        - name: todo-data
+          persistentVolumeClaim:
+            claimName: todo-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: todo-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
