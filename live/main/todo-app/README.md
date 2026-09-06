@@ -34,8 +34,8 @@ GKE cannot pull from your local Docker daemon, so push to a registry the cluster
 export PROJECT_ID="$(gcloud config get-value project)"
 
 # Artifact Registry (recommended)
-docker tag todo-app:latest "asia-southeast2-docker.pkg.dev/${PROJECT_ID}/todo-app:latest"
-docker push "asia-southeast2-docker.pkg.dev/${PROJECT_ID}/todo-app:latest"
+docker tag todo-app:latest "asia-southeast2-docker.pkg.dev/${PROJECT_ID}/todo-app/todo-app:latest"
+docker push "asia-southeast2-docker.pkg.dev/${PROJECT_ID}/todo-app/todo-app:latest"
 ```
 
 > This avoids hardcoding the project id. Update the image name if you use a different registry.
@@ -82,7 +82,7 @@ spec:
     spec:
       containers:
         - name: todo-app
-          image: asia-southeast2-docker.pkg.dev/${PROJECT_ID}/todo-app:latest
+          image: asia-southeast2-docker.pkg.dev/${PROJECT_ID}/todo-app/todo-app:latest
           ports:
             - containerPort: 5000
           volumeMounts:

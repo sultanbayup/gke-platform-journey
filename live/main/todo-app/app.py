@@ -1,6 +1,7 @@
 import os
 import sqlite3
-from flask import Flask, request, redirect, url_for, escape
+from flask import Flask, request, redirect, url_for
+from markupsafe import escape 
 
 app = Flask(__name__)
 
