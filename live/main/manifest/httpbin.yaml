@@ -54,7 +54,8 @@ spec:
               port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
----apiVersion: autoscaling/v2
+---
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: httpbin
